@@ -54,6 +54,21 @@ const items = [
   { name: "Item 50", price: 12, weight: 20 },
 ];
 
+const calculateCourierCharge = (weight) => {
+  if (weight <= 200) {
+    return 5;
+  } else if (weight <= 500) {
+    return 10;
+  } else if (weight <= 1000) {
+    return 15;
+  } else if (weight <= 5000) {
+    return 20;
+  } else {
+    // Handle cases where weight is above 5000g if needed
+    return 20; // Defaulting to highest tier for weights above 5000g
+  }
+};
+
 const App = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [packages, setPackages] = useState([]);
@@ -69,7 +84,11 @@ const App = () => {
   const handlePlaceOrder = async () => {
     try {
       const response = await axios.post('https://online-store-rfhg.onrender.com/place-order', { items: selectedItems });
-      setPackages(response.data.packages);
+      const packages = response.data.packages.map(pkg => ({
+        ...pkg,
+        courierCharge: calculateCourierCharge(pkg.totalWeight)
+      }));
+      setPackages(packages);
     } catch (error) {
       console.error('Error placing order:', error);
     }
@@ -94,7 +113,7 @@ const App = () => {
 
       {packages.length > 0 && (
         <div>
-          <h2>Order Packages</h2>
+          <h2>This order has following packages:</h2>
           {packages.map((pkg, index) => (
             <div key={index}>
               <h3>Package {index + 1}</h3>
@@ -105,7 +124,7 @@ const App = () => {
               </ul>
               <p>Total Weight: {pkg.totalWeight}g</p>
               <p>Total Price: ${pkg.totalPrice}</p>
-              <p>Courier Price: ${pkg.courierPrice}</p>
+              <p>Courier Price: ${pkg.courierCharge}</p>
             </div>
           ))}
         </div>
