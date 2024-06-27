@@ -68,7 +68,7 @@ const App = () => {
 
   const handlePlaceOrder = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/place-order', { items: selectedItems });
+      const response = await axios.post('https://online-store-rfhg.onrender.com/place-order', { items: selectedItems });
       setPackages(response.data.packages);
     } catch (error) {
       console.error('Error placing order:', error);
